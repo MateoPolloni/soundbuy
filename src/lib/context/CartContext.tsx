@@ -1,7 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CartItem, Track } from '../types';
+
+const STORAGE_KEY = 'soundbuy_cart';
 
 interface CartContextType {
   items: CartItem[];
@@ -16,6 +18,23 @@ const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        setItems(JSON.parse(stored));
+      } catch {
+        // ignore malformed cart data
+      }
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items, hydrated]);
 
   const addToCart = (track: Track, licenseType: 'basic' | 'premium' | 'exclusive') => {
     const price = track.licenses[licenseType];

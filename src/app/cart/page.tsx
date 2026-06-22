@@ -1,11 +1,36 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/lib/context/CartContext';
 import Price from '@/components/ui/Price';
 
 export default function CartPage() {
   const { items, removeFromCart, total, clearCart } = useCart();
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
+
+  const handleCheckout = () => {
+    setCheckingOut(true);
+    setTimeout(() => {
+      setCheckingOut(false);
+      setOrderComplete(true);
+      clearCart();
+    }, 1200);
+  };
+
+  if (orderComplete) {
+    return (
+      <div className="min-h-screen pt-24 flex items-center justify-center">
+        <div className="text-center px-8">
+          <div className="font-display font-extrabold gradient-text text-3xl mb-3">Order placed ✓</div>
+          <p className="text-[#8080a8] mb-2 text-sm">Demo checkout — no payment was processed.</p>
+          <p className="text-[#48486a] mb-8 text-sm">Your licenses would normally arrive by email.</p>
+          <Link href="/browse" className="btn-primary">Browse More Tracks</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -92,8 +117,12 @@ export default function CartPage() {
                 <span className="font-mono gradient-text-gold text-2xl"><Price value={total} /></span>
               </div>
 
-              <button className="w-full btn-primary justify-center mb-3">
-                Proceed to Checkout
+              <button
+                onClick={handleCheckout}
+                disabled={checkingOut}
+                className="w-full btn-primary justify-center mb-3 disabled:opacity-70"
+              >
+                {checkingOut ? 'Processing...' : 'Proceed to Checkout'}
               </button>
 
               <button
