@@ -29,7 +29,7 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
   const coverBars = Array.from({ length: 70 }, (_, i) => seededBar(seed, i));
 
   return (
-    <div className="min-h-screen pt-32 pb-24">
+    <div className="min-h-screen pt-16 pb-24">
       <div className="max-w-7xl mx-auto px-8 md:px-14">
         {/* Breadcrumb */}
         <nav className="font-mono text-[9px] text-[#48486a] mb-10 flex items-center gap-2.5 uppercase tracking-[0.2em]">

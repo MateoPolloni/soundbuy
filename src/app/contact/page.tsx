@@ -9,7 +9,7 @@ const channels = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen pt-32 pb-24">
+    <div className="min-h-screen pt-16 pb-24">
       <div className="max-w-6xl mx-auto px-8 md:px-14">
 
         <RevealOnScroll>

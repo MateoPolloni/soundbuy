@@ -20,7 +20,10 @@ const stats = [
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section
+      className="relative flex items-center overflow-hidden"
+      style={{ minHeight: '100vh', marginTop: '-4rem' }}
+    >
 
       {/* ── Dark base ─────────────────── */}
       <div className="absolute inset-0 bg-[#06060a]" />
@@ -90,7 +93,7 @@ export default function Hero() {
       </div>
 
       {/* ── Main content ──────────────── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-14 md:px-20">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-8 md:px-20">
 
         {/* Index line */}
         <div className="flex items-center gap-4 mb-10 animate-slide-down" style={{ animationDelay: '0.1s', opacity: 0 }}>
@@ -163,17 +166,17 @@ export default function Hero() {
 
           {/* Stats */}
           <div
-            className="flex gap-10 lg:gap-14 animate-fade-up"
+            className="flex gap-5 sm:gap-10 lg:gap-14 animate-fade-up"
             style={{ animationDelay: '0.88s', opacity: 0 }}
           >
             {stats.map(s => (
               <div key={s.label} className="text-right">
-                <div className="font-display font-extrabold gradient-text-gold"
-                  style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', lineHeight: 1 }}
+                <div className="font-display font-extrabold gradient-text-gold whitespace-nowrap"
+                  style={{ fontSize: 'clamp(19px, 5.5vw, 44px)', lineHeight: 1 }}
                 >
                   <AnimatedNumber value={s.value} suffix={s.suffix} />
                 </div>
-                <div className="font-mono text-[9px] tracking-[0.28em] uppercase text-[#48486a] mt-2">
+                <div className="font-mono text-[8px] sm:text-[9px] tracking-[0.2em] sm:tracking-[0.28em] uppercase text-[#48486a] mt-2 whitespace-nowrap">
                   {s.label}
                 </div>
               </div>

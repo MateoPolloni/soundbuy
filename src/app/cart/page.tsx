@@ -48,7 +48,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-24">
+    <div className="min-h-screen pt-16 pb-24">
       <div className="max-w-4xl mx-auto px-8 md:px-14">
         <div className="mb-12">
           <div className="section-label">Checkout</div>

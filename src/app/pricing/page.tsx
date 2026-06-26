@@ -59,7 +59,7 @@ const faqs = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen pt-32 pb-24">
+    <div className="min-h-screen pt-16 pb-24">
       <div className="max-w-7xl mx-auto px-8 md:px-14">
 
         <RevealOnScroll>

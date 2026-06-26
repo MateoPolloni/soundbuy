@@ -1,27 +1,132 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/context/CartContext';
+
+// Same platform-level bug found and fixed on the Dettagli project: iOS
+// Safari has a system component bug (WebKit Bugzilla #297779) where
+// window.visualViewport.offsetTop loses sync with the real viewport during
+// scroll/keyboard-dismissal, causing position:fixed/sticky elements to
+// render away from their correctly-measured position. Confirmed affecting
+// other major sites independently (LinkedIn, via a public Mastodon issue),
+// so this isn't site-specific — any position:fixed header is exposed to it.
+// Version-sniffing for "iOS 26" specifically doesn't work: Safari freezes/
+// reduces the OS version it reports in the User-Agent for fingerprinting
+// resistance, so it never matches even on a confirmed affected device. The
+// device type token (iPhone/iPad) isn't subject to that freezing.
+function isIOSSafari(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent;
+  return /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+}
+
+const links = [
+  { label: 'Browse', href: '/browse' },
+  { label: 'Producers', href: '/producers' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Sell', href: '/sell' },
+];
 
 export default function Navbar() {
   const { count } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [staticHeader, setStaticHeader] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    setStaticHeader(isIOSSafari());
+  }, []);
+
+  // Transparent-over-hero until scrolled, then blurred/solid — unchanged
+  // from the original design. Pure background/border transition, doesn't
+  // touch position, so it's safe regardless of which positioning mode
+  // (JS-pinned or iOS static fallback) is active below.
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Scroll-driven "stays pinned to top" behavior, skipped on iOS Safari
+  // (see isIOSSafari above) where the header instead renders as a normal,
+  // fully static in-flow element — no positioning mechanism left for the
+  // platform bug to corrupt, at the cost of the header scrolling away on
+  // that platform specifically instead of staying pinned.
+  useEffect(() => {
+    if (staticHeader) return;
+    let ticking = false;
+    let lastGood = window.scrollY;
+    let lowStreak = 0;
+
+    const apply = () => {
+      ticking = false;
+      const current = window.scrollY;
+      const looksGlitched = current <= 2 && lastGood > 40;
+
+      if (looksGlitched) {
+        lowStreak++;
+        if (lowStreak < 4) {
+          const el = headerRef.current;
+          if (el) el.style.transform = `translate3d(0, ${lastGood}px, 0)`;
+          return;
+        }
+      } else {
+        lowStreak = 0;
+      }
+
+      lastGood = current;
+      const el = headerRef.current;
+      if (el) el.style.transform = `translate3d(0, ${current}px, 0)`;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    };
+    apply();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [staticHeader]);
+
+  // Lock background scroll while the mobile menu is open. The menu is an
+  // inline dropdown inside the (now in-flow) header rather than a
+  // full-screen overlay, so without this the page behind it can still
+  // scroll. Uses overflow/overscroll-behavior rather than position:fixed
+  // on body — a position:fixed ancestor would create a new containing
+  // block for the header's own translate3d positioning and hijack it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const html = document.documentElement.style;
+    const body = document.body.style;
+    const prevHtmlOverflow = html.overflow;
+    const prevBodyOverflow = body.overflow;
+    const prevOverscroll = html.overscrollBehaviorY;
+    html.overflow = 'hidden';
+    body.overflow = 'hidden';
+    html.overscrollBehaviorY = 'none';
+    return () => {
+      html.overflow = prevHtmlOverflow;
+      body.overflow = prevBodyOverflow;
+      html.overscrollBehaviorY = prevOverscroll;
+    };
+  }, [menuOpen]);
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      ref={headerRef}
+      className={`relative z-50 will-change-transform transition-all duration-500 ${
         scrolled
           ? 'backdrop-blur-2xl bg-[#06060a]/88 border-b border-[rgba(124,58,237,0.14)]'
           : 'bg-transparent'
       }`}
+      style={staticHeader ? undefined : { transform: 'translate3d(0, 0, 0)' }}
     >
       <div className="max-w-7xl mx-auto px-8 md:px-14 h-16 flex items-center justify-between">
 
@@ -32,12 +137,7 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-10">
-          {[
-            { label: 'Browse', href: '/browse' },
-            { label: 'Producers', href: '/producers' },
-            { label: 'Pricing', href: '/pricing' },
-            { label: 'Sell', href: '/sell' },
-          ].map(link => (
+          {links.map(link => (
             <Link
               key={link.label}
               href={link.href}
@@ -95,13 +195,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-[#0c0c16] border-t border-[rgba(124,58,237,0.12)] px-8 py-6 flex flex-col gap-5 animate-slide-down">
-          {[
-            { label: 'Browse', href: '/browse' },
-            { label: 'Producers', href: '/producers' },
-            { label: 'Pricing', href: '/pricing' },
-            { label: 'Sell', href: '/sell' },
-            { label: 'Sign In', href: '/login' },
-          ].map(link => (
+          {[...links, { label: 'Sign In', href: '/login' }].map(link => (
             <Link
               key={link.label}
               href={link.href}

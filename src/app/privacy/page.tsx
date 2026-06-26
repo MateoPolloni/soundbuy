@@ -37,7 +37,7 @@ const sections = [
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen pt-32 pb-24">
+    <div className="min-h-screen pt-16 pb-24">
       <div className="max-w-3xl mx-auto px-8 md:px-14">
 
         <RevealOnScroll>
