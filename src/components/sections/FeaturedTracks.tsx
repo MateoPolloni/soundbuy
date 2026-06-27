@@ -37,14 +37,14 @@ export default function FeaturedTracks() {
         </RevealOnScroll>
 
         {/* Horizontal scroll on mobile, grid on desktop */}
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none">
+        <div className="flex gap-4 overflow-x-auto touch-pan-x scrollbar-hide pb-2 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none">
           {featuredTracks.map((track, i) => (
             <div
               key={track.id}
               className="flex-shrink-0 w-[72vw] max-w-[280px] snap-start md:w-auto md:max-w-none"
             >
               <RevealOnScroll delay={i * 90}>
-                <TrackCard track={track} index={i} />
+                <TrackCard track={track} index={i} forceCard />
               </RevealOnScroll>
             </div>
           ))}

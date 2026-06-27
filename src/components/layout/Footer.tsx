@@ -4,10 +4,10 @@ export default function Footer() {
   return (
     <footer className="border-t border-[rgba(124,58,237,0.12)] bg-[#06060a] mt-24">
       <div className="max-w-7xl mx-auto px-8 md:px-14 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
 
           {/* Brand */}
-          <div className="md:col-span-2">
+          <div className="col-span-2 md:col-span-2">
             <div className="font-display font-extrabold text-xl tracking-[0.16em] gradient-text mb-5">
               SOUNDBUY
             </div>

@@ -129,7 +129,7 @@ export default function WaveformPlayer({ audioUrl, trackId, trackTitle }: Wavefo
           <input
             type="range" min="0" max="1" step="0.01" value={volume}
             onChange={handleVolume}
-            className="w-20 accent-[#7c3aed]"
+            className="w-20 accent-[#7c3aed] touch-none"
           />
         </div>
       </div>

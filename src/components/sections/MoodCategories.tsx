@@ -64,12 +64,12 @@ export default function MoodCategories() {
           </div>
         </RevealOnScroll>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
           {moods.map((mood, i) => (
             <RevealOnScroll key={mood.name} delay={i * 70}>
               <Link
                 href={`/browse?mood=${mood.filter}`}
-                className="group relative flex flex-col justify-end p-7 min-h-[160px] card-surface"
+                className="group relative flex flex-col justify-end p-4 sm:p-7 min-h-[140px] sm:min-h-[160px] card-surface"
               >
                 {/* Background */}
                 <div
